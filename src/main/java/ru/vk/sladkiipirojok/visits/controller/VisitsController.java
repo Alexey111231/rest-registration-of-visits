@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 @Validated
 public class VisitsController {
     private final VisitsService visitsService;
-
 
     @Autowired
     public VisitsController(VisitsService visitsService) {
@@ -65,6 +65,11 @@ public class VisitsController {
         if (from >= to) {
             throw new IllegalArgumentException("Start time is greater than end time");
         }
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    private ResponseEntity<StatusDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return new ResponseEntity<>(new StatusDTO("Error json"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ValidationException.class})

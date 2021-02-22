@@ -1,5 +1,6 @@
 package ru.vk.sladkiipirojok.visits.service;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.vk.sladkiipirojok.visits.service.dto.Domain;
@@ -15,10 +16,12 @@ import java.util.stream.Collectors;
 @Service
 public class VisitServiceImpl implements VisitsService {
     private final LinkRepository linkRepository;
+    private final UrlValidator urlValidator;
 
     @Autowired
-    public VisitServiceImpl(LinkRepository linkRepository) {
+    public VisitServiceImpl(LinkRepository linkRepository, UrlValidator urlValidator) {
         this.linkRepository = linkRepository;
+        this.urlValidator = urlValidator;
     }
 
     @Override
@@ -28,19 +31,24 @@ public class VisitServiceImpl implements VisitsService {
 
     @Override
     public Set<Domain> getDomainsFromInterval(Long from, Long to) {
-        List<Link> visitedLinks = linkRepository.findByDateBetween(from, to);
+        Set<Link> visitedLinks = linkRepository.findByDateBetween(from, to);
         return visitedLinks.stream()
                 .map(link -> new Domain(getDomain(link)))
                 .collect(Collectors.toSet());
     }
 
-    private static String getDomain(Link link) {
+    private String getDomain(Link link) {
+        String linkStr = link.getLink();
+        URI uri;
+
         try {
-            URI uri = new URI(link.getLink());
-            String domain = uri.getHost();
-            return domain.startsWith("www.") ? domain.substring(4) : domain;
+            uri = urlValidator.isValid(linkStr) ? new URI(linkStr)
+                    : new URI("http://" + linkStr);
         } catch (URISyntaxException e) {
-            throw new IllegalStateException("Illegal link in databases");
+            throw new IllegalStateException("Is invalid link:" + linkStr);
         }
+
+        String domain = uri.getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
     }
 }
