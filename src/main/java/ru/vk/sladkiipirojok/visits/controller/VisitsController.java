@@ -60,7 +60,6 @@ public class VisitsController {
     }
 
     //EXCEPTIONS
-
     private static void assertTimeInterval(long from, long to) {
         if (from >= to) {
             throw new IllegalArgumentException("Start time is greater than end time");
@@ -83,12 +82,12 @@ public class VisitsController {
     }
 
     @ExceptionHandler({ServletRequestBindingException.class})
-    protected ResponseEntity<StatusDTO> handleValidationExceptions(ServletRequestBindingException ex) {
+    private ResponseEntity<StatusDTO> handleValidationExceptions(ServletRequestBindingException ex) {
         return new ResponseEntity<>(new StatusDTO("Wrong number of parameters"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
-    protected ResponseEntity<StatusDTO> handleValidationExceptions(IllegalArgumentException ex) {
+    private ResponseEntity<StatusDTO> handleValidationExceptions(IllegalArgumentException ex) {
         return new ResponseEntity<>(new StatusDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

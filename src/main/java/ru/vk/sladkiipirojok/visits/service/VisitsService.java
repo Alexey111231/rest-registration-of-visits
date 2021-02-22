@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface VisitsService {
-    public void addLinks(List<Link> linkList);
+    void addLinks(List<Link> linkList);
 
-    public Set<Domain> getDomainsFromInterval(Long from, Long to);
+    Set<Domain> getDomainsFromInterval(Long from, Long to);
 }
