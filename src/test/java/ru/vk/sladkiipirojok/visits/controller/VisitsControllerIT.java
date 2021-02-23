@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-class VisitsControllerTest {
+class VisitsControllerIT {
     //TEST CONSTANTS
     private final String FIRST_DOMAIN_IN_DB = "kek.ru";
     private final String SECOND_DOMAIN_IN_DB = "test.ru";
