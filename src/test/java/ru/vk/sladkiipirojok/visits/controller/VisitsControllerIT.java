@@ -154,37 +154,6 @@ class VisitsControllerIT {
 
     @Test
     @SneakyThrows
-    void GetAndPost_TwoSaveGetTheFirstSaveData_ReturnedSecondSaveData() {
-        mockMvc.perform(post(POST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(JSON_TWO_ARGS, FIRST_URL, FIRST_SAVE_URL)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath(JSON_STATUS_PATH, is(OK_STATUS)));
-
-        long dateBefore = timeService.getTime();
-
-        mockMvc.perform(post(POST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(JSON_TWO_ARGS, SECOND_URL, SECOND_SAVE_URL)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath(JSON_STATUS_PATH, is(OK_STATUS)));
-
-        long dateAfter = timeService.getTime();
-
-        mockMvc.perform(get(String.format(GET_URL, dateBefore, dateAfter)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath(JSON_STATUS_PATH, is(OK_STATUS)))
-                .andExpect(jsonPath(JSON_DOMAIN_PATH).isArray())
-                .andExpect(jsonPath(JSON_DOMAIN_PATH, hasSize(2)))
-                .andExpect(jsonPath(JSON_DOMAIN_PATH, hasItem(SECOND_URL)))
-                .andExpect(jsonPath(JSON_DOMAIN_PATH, hasItem(SECOND_SAVE_URL)));
-    }
-
-    @Test
-    @SneakyThrows
     void GetAndPost_TwoSaveGetAllDataFromDB_ReturnedAllDataFromDB() {
         mockMvc.perform(post(POST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -218,7 +187,7 @@ class VisitsControllerIT {
 
     @Test
     @SneakyThrows
-    void PostAndGet_From0To5000_ReturnedKekAndTest() {
+    void PostAndGet_From0To5000_ReturnedFirstDomainInDB() {
         mockMvc.perform(get(String.format(GET_URL, 0, 5000)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -292,7 +261,7 @@ class VisitsControllerIT {
 
     @Test
     @SneakyThrows
-    void Get_FromGreatestTo_IsBadRequestAndStatusStartGreaterEnd() {
+    void Get_FromGreatestThanTo_IsBadRequestAndStatusStartGreaterEnd() {
         mockMvc.perform(get(String.format(GET_URL, 500, 200)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
