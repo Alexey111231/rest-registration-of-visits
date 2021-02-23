@@ -9,8 +9,9 @@ public class URIOptionalSchemaValidator implements
         ConstraintValidator<URIOptionalSchema, String> {
     private final UrlValidator urlValidator;
 
-    public URIOptionalSchemaValidator(UrlValidator urlValidator) {
-        this.urlValidator = urlValidator;
+    public URIOptionalSchemaValidator() {
+        //Spring constraints
+        this.urlValidator = new UrlValidator(new String[]{"http", "https"});
     }
 
     @Override

@@ -9,9 +9,9 @@ import ru.vk.sladkiipirojok.visits.service.repository.LinkRepository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class VisitServiceImpl implements VisitsService {
@@ -29,12 +29,19 @@ public class VisitServiceImpl implements VisitsService {
         linkRepository.saveAll(linkList);
     }
 
+    //Решение до более глубокого знакомства с redis
     @Override
     public Set<Domain> getDomainsFromInterval(Long from, Long to) {
-        Set<Link> visitedLinks = linkRepository.findByDateBetween(from, to);
-        return visitedLinks.stream()
-                .map(link -> new Domain(getDomain(link)))
-                .collect(Collectors.toSet());
+        Iterable<Link> links = linkRepository.findAll();
+
+        Set<Domain> visitedLinks = new HashSet<>();
+        links.forEach(link -> {
+            if (link.getDate() >= from && link.getDate() <= to) {
+                visitedLinks.add(new Domain(getDomain(link)));
+            }
+        });
+
+        return visitedLinks;
     }
 
     private String getDomain(Link link) {

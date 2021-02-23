@@ -11,6 +11,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ru.vk.sladkiipirojok.visits.controller.dto.StatusDTO;
 import ru.vk.sladkiipirojok.visits.controller.dto.VisitedDomainDTO;
 import ru.vk.sladkiipirojok.visits.controller.dto.VisitedLinksDTO;
+import ru.vk.sladkiipirojok.visits.service.TimeService;
 import ru.vk.sladkiipirojok.visits.service.VisitsService;
 import ru.vk.sladkiipirojok.visits.service.dto.Domain;
 import ru.vk.sladkiipirojok.visits.service.model.Link;
@@ -27,10 +28,12 @@ import java.util.stream.Collectors;
 @Validated
 public class VisitsController {
     private final VisitsService visitsService;
+    private final TimeService timeService;
 
     @Autowired
-    public VisitsController(VisitsService visitsService) {
+    public VisitsController(VisitsService visitsService, TimeService timeService) {
         this.visitsService = visitsService;
+        this.timeService = timeService;
     }
 
     @GetMapping("/visited_domains")
@@ -51,7 +54,7 @@ public class VisitsController {
         List<Link> links = visitedLinksDTO
                 .getLinks()
                 .stream()
-                .map(link -> new Link(link, System.currentTimeMillis()))
+                .map(link -> new Link(link, timeService.getTime()))
                 .collect(Collectors.toList());
 
         visitsService.addLinks(links);
